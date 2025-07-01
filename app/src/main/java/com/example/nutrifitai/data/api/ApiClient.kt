@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    private const val BASE_URL = "http://10.0.2.2:1234/" // For Android emulator to access localhost
+    private const val BASE_URL = "https://73fb-5-9-20-27.ngrok-free.app/" // ngrok tunnel to LM Studio
     
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
