@@ -24,13 +24,12 @@ class ChatViewModel : ViewModel() {
     Usa un tono amichevole ma professionale. Rispondi sempre in italiano."""
     
     init {
-        // Messaggio di benvenuto
-        _messages.value = listOf(
-            Message(
-                content = "Ciao! Sono NutriFit AI, il tuo assistente personale per nutrizione e fitness. Come posso aiutarti oggi?",
-                isUser = false
-            )
-        )
+        // Nessun messaggio iniziale per evitare problemi con l'alternanza
+        _messages.value = emptyList()
+    }
+    
+    fun clearMessages() {
+        _messages.value = emptyList()
     }
     
     fun sendMessage(userMessage: String) {
@@ -42,13 +41,15 @@ class ChatViewModel : ViewModel() {
             _isLoading.value = true
             
             try {
-                // Costruisci la conversazione per l'API
-                val apiMessages = mutableListOf(
-                    ChatMessage(role = "system", content = systemPrompt)
-                )
+                // Costruisci la conversazione per l'API in modo semplice
+                val apiMessages = mutableListOf<ChatMessage>()
                 
-                // Aggiungi ultimi messaggi per contesto (max 10)
-                _messages.value.takeLast(10).forEach { msg ->
+                // Aggiungi il system prompt come primo messaggio
+                apiMessages.add(ChatMessage(role = "system", content = systemPrompt))
+                
+                // Aggiungi gli ultimi messaggi della conversazione (escluso l'ultimo che abbiamo già aggiunto)
+                val recentMessages = _messages.value.dropLast(1).takeLast(6)
+                recentMessages.forEach { msg ->
                     apiMessages.add(
                         ChatMessage(
                             role = if (msg.isUser) "user" else "assistant",
@@ -56,6 +57,9 @@ class ChatViewModel : ViewModel() {
                         )
                     )
                 }
+                
+                // Aggiungi il messaggio corrente dell'utente
+                apiMessages.add(ChatMessage(role = "user", content = userMessage))
                 
                 // Invia richiesta a LM Studio
                 val response = ApiClient.lmStudioApi.sendMessage(
@@ -71,9 +75,19 @@ class ChatViewModel : ViewModel() {
                 _messages.value = _messages.value + aiMsg
                 
             } catch (e: Exception) {
-                // Gestione errori
+                // Gestione errori con dettagli
+                val errorDetails = when {
+                    e.message?.contains("timeout", ignoreCase = true) == true -> 
+                        "Timeout nella connessione. Il server potrebbe essere lento."
+                    e.message?.contains("Unable to resolve host", ignoreCase = true) == true -> 
+                        "Impossibile raggiungere il server. Verifica la connessione."
+                    e.message?.contains("failed to connect", ignoreCase = true) == true -> 
+                        "Connessione fallita. Il server potrebbe essere offline."
+                    else -> "Errore: ${e.message ?: "Errore sconosciuto"}"
+                }
+                
                 val errorMsg = Message(
-                    content = "Errore di connessione. Assicurati che LM Studio sia in esecuzione su localhost:1234",
+                    content = errorDetails,
                     isUser = false
                 )
                 _messages.value = _messages.value + errorMsg

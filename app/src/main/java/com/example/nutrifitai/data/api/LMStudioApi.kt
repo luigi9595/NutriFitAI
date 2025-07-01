@@ -14,7 +14,7 @@ data class ChatRequest(
     val model: String = "google/gemma-3-27b",
     val messages: List<ChatMessage>,
     val temperature: Double = 0.7,
-    val max_tokens: Int = 2048,
+    val max_tokens: Int = 500,  // Ridotto per risposte più veloci
     val stream: Boolean = false
 )
 
