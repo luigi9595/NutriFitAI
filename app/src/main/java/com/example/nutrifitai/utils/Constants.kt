@@ -4,7 +4,7 @@ object Constants {
     // LM Studio Configuration
     const val LM_STUDIO_BASE_URL = "http://10.0.2.2:1234/" // For emulator
     const val LM_STUDIO_PHYSICAL_DEVICE_URL = "http://192.168.1.X:1234/" // Replace X with your PC's IP
-    const val MODEL_NAME = "deepseek/deepseek-r1-0528-qwen3-8b"
+    const val MODEL_NAME = "google/gemma-3-27b"
     
     // Supabase Configuration (for future use)
     const val SUPABASE_URL = "https://fuypacrnecamjtoniezp.supabase.co"

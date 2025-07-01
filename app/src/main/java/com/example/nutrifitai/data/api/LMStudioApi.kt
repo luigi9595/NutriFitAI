@@ -11,7 +11,7 @@ interface LMStudioApi {
 }
 
 data class ChatRequest(
-    val model: String = "deepseek/deepseek-r1-0528-qwen3-8b",
+    val model: String = "google/gemma-3-27b",
     val messages: List<ChatMessage>,
     val temperature: Double = 0.7,
     val max_tokens: Int = 2048,
